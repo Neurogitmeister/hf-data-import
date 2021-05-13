@@ -71,11 +71,18 @@ const userConst: UserCreateData = {
   contactValues: ['+79130001122']
 }
 
+enum ClientDataFields {
+  name = 'name',
+  phone = 'phone',
+  comment = 'comment',
+  addresses = 'addresses',
+}
+
 type ClientDataRow = {
-  name: string;
-  phone: string;
-  comment: string;
-  addresses: string;
+  [ClientDataFields.name]: string;
+  [ClientDataFields.phone]: string;
+  [ClientDataFields.comment]: string;
+  [ClientDataFields.addresses]: string;
 }
 
 const testRow: ClientDataRow  = {
@@ -299,7 +306,14 @@ async function processRows(rows: ClientDataRow[]) {
 
 const rows: ClientDataRow[] = [];
 fs.createReadStream(CSV_PATH)
-  .pipe(csv())
+  .pipe(csv({
+    headers: [
+      ClientDataFields.phone,
+      ClientDataFields.name,
+      ClientDataFields.comment,
+      ClientDataFields.addresses
+    ]
+  }))
   .on('data', (data) => rows.push(data))
   .on('end', () => processRows(rows));
 
