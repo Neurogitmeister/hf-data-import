@@ -1,0 +1,27 @@
+{
+  "name": "hf-data-import",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "dependencies": {
+    "graphql-request": "^3.4.0",
+    "typescript": "^4.2.4"
+  },
+  "devDependencies": {
+    "apollo": "^2.33.2"
+  },
+  "scripts": {
+    "test": "test",
+    "gen-gql-types": "apollo client:codegen 'graphql/types.ts' --outputFlat -c apollo.config.js --target=typescript --tsFileExtension='d.ts'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Neurogitmeister/hf-data-import.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Neurogitmeister/hf-data-import/issues"
+  },
+  "homepage": "https://github.com/Neurogitmeister/hf-data-import#readme"
+}
