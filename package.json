@@ -12,7 +12,7 @@
   },
   "scripts": {
     "test": "test",
-    "gen-gql-types": "apollo client:codegen 'graphql/types.ts' --outputFlat -c apollo.config.js --target=typescript --tsFileExtension='d.ts'"
+    "gen-gql-types": "apollo client:codegen 'src/graphql/types.ts' --outputFlat -c apollo.config.js --target=typescript --tsFileExtension='d.ts'"
   },
   "repository": {
     "type": "git",

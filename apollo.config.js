@@ -2,8 +2,8 @@ module.exports = {
   client: {
     service: {
       name: 'HappyFood',
-      localSchemaFile: './graphql/schema.gql',
+      localSchemaFile: 'src/graphql/schema.gql',
     },
-    includes: ['./graphql/queries/*.ts'],
+    includes: ['src/graphql/queries/*.ts'],
   },
 };

@@ -175,6 +175,47 @@ export interface SignUpVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UpdateProfile
+// ====================================================
+
+export interface UpdateProfile_updateProfile_user_contacts {
+  __typename: "Contact";
+  confirmationCodeSent: boolean;
+  value: string;
+}
+
+export interface UpdateProfile_updateProfile_user_profile {
+  __typename: "Profile";
+  id: string;
+}
+
+export interface UpdateProfile_updateProfile_user {
+  __typename: "User";
+  id: string;
+  contacts: UpdateProfile_updateProfile_user_contacts[];
+  profile: UpdateProfile_updateProfile_user_profile;
+}
+
+export interface UpdateProfile_updateProfile {
+  __typename: "Profile";
+  user: UpdateProfile_updateProfile_user;
+}
+
+export interface UpdateProfile {
+  updateProfile: UpdateProfile_updateProfile;
+}
+
+export interface UpdateProfileVariables {
+  data: ProfileUpdateData;
+  id: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL fragment: BuildingAddressDeliveryDataFragment
 // ====================================================
 
@@ -279,6 +320,11 @@ export interface ClientAddressUidInput {
   floor?: string | null;
   unit?: string | null;
   userIdentifier: UserIdentifier;
+}
+
+export interface ProfileUpdateData {
+  comment?: string | null;
+  userIdentifier?: UserIdentifier | null;
 }
 
 export interface UserCreateData {
