@@ -169,10 +169,12 @@ const buildingRegex = /[0-9]{1,}(\/[0-9]{1,})?/;
 
 function parseBuildingAddress(str: string){
   console.log('\n', str);
+  str = str.replace(/\\/g, '/');
   const result: Partial<BuildingAddressUidInput> = {};
   const cityEndIndex = str.indexOf(',');
   if ( cityEndIndex > -1) {
-    const cityParts = str.substr(0, cityEndIndex - 1).split(' ');
+    const cityParts = str.substr(0, cityEndIndex).split(' ');
+    console.log(str.substr(0, cityEndIndex), cityParts);
     let nameIndexFound = false;
     for (const part of cityParts) {
       if (rusCapitalLetters.indexOf(part[0]) > -1) {
@@ -186,19 +188,32 @@ function parseBuildingAddress(str: string){
         result.cityType += part + ' ';
       }
     }
-    result.cityType?.trimEnd();
-    result.cityName?.trimEnd();
+    result.cityType = result.cityType?.trimEnd();
+    result.cityName = result.cityName?.trimEnd();
   }
-  const partsAfterCity = str.substr(cityEndIndex > -1 ? cityEndIndex : 0).split(' ');
+  const partsAfterCity = str.substr(cityEndIndex > -1 ? cityEndIndex + 1 : 0).split(' ');
   let nameIndexFound = false;
   let buildingIndexFound = false;
   let buildingPart = '';
   for (const part of partsAfterCity) {
    if (rusCapitalLetters.indexOf(part[0]) > -1) {
       nameIndexFound = true;
-    } else if (part.match(buildingRegex)?.length) {
-      buildingIndexFound = true;
-    }
+    } else {
+      const matches = part.match(buildingRegex);
+      if (matches && matches[0] === part) {
+
+        if (nameIndexFound) {
+          buildingIndexFound = true;
+        }
+
+        if (!buildingIndexFound && !nameIndexFound) {
+          nameIndexFound = true;
+        }
+        
+      } else if (matches) {
+        nameIndexFound = true;
+      }
+   }
     if (buildingIndexFound) {
       buildingPart += part + ' ';
     } else if (nameIndexFound) {
@@ -209,13 +224,18 @@ function parseBuildingAddress(str: string){
       result.streetType += part + ' ';
     } 
   }
+  result.streetName = result.streetName?.trimEnd();
+  result.streetType = result.streetType?.trim();
+  if (!result.streetType) {
+    delete result.streetType;
+  }
   const buildingParts = buildingPart.trimEnd().split(' ')
   if (buildingParts.length > 1) {
     result.buildingName = buildingParts[0] + '/' + buildingParts[2];
   } else {
     result.buildingName = buildingParts[0];
   }
-  // console.log(result, '\n');
+  console.log(result, '\n');
   return {...buildingDefaults, ...result};
 }
 
@@ -223,9 +243,9 @@ function parseBuildingAddress(str: string){
 function parseClientAddress(str: string){
   const result: ClientAddressInput = {};
   const parts = str.split('/');
-  result.entrance = parts[0];
-  result.floor = parts[1];
-  result.unit = parts[2];
+  result.entrance = parts[0] ? parts[0] : undefined;
+  result.floor = parts[1] ? parts[1] : undefined;
+  result.unit = parts[2] ? parts[2] : undefined;
   return result;
 }
 
@@ -233,7 +253,7 @@ function parseAddresses(addressesStr: string) {
   const parsed: CreateData['addresses'] = [];
   const addresses = addressesStr.replace(/[' ']{1,}/g, ' ').split('\n');
   addresses.forEach(addrStr => {
-    // console.log(addrStr);
+    console.log(addrStr);
     let clientPartStart = addrStr.indexOf('(');
     clientPartStart = clientPartStart > -1 ? clientPartStart : addrStr.length + 1;
     let clientPartEnd = addrStr.indexOf(')');
@@ -241,7 +261,7 @@ function parseAddresses(addressesStr: string) {
     const buildingPart = addrStr.substr(0, clientPartStart - 1).trimEnd();
     const clientPart = addrStr.substr(clientPartStart + 1, clientPartEnd - clientPartStart - 1);
     const comment = addrStr.substr(clientPartEnd + 1).trimStart();
-    // console.log(`\n${buildingPart}\n${clientPart}\n${comment}\n`);
+    console.log(`\n${buildingPart}\n${clientPart}\n${comment}\n`);
 
     const buildingAddress = parseBuildingAddress(buildingPart);
     const clientAddress = parseClientAddress(clientPart);
