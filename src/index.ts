@@ -164,6 +164,10 @@ function parseUserName(userNameStr: string) {
     return user;
 }
 
+function parsePhones(str: string) {
+  return str.split('\n').map(it => '+' + it);
+}
+
 const rusCapitalLetters = 'АБВГДЕЁЖЗИКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
 const buildingRegex = /[0-9]{1,}(\/[0-9]{1,})?/;
 
@@ -279,7 +283,8 @@ function parseColumns(data: ClientDataRow[]): CreateData[] {
 
   data.forEach((row, i) => {
     const user = parseUserName(row.name);
-    user.contactValues = ['+' + row.phone];
+    const phones = parsePhones(row.phone);
+    user.contactValues = phones;
     const addresses = parseAddresses(row.addresses);
     results[i] = {
       user,
