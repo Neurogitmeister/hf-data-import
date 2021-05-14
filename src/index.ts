@@ -1,7 +1,7 @@
 import { request } from 'graphql-request'
 import { BUILDING_ADDRESS_DELIVERY_DATA } from './graphql/queries/address-delivery-data';
 import { GET_OR_CREATE_BUILDING_ADDRESS } from './graphql/queries/get-or-create-building-address'
-import { GET_OR_CREATE_CLIENT_ADDRESS } from './graphql/queries/get-or-create-client-address'
+import { CREATE_CLIENT_ADDRESS } from './graphql/queries/create-client-address'
 import { SIGN_UP } from './graphql/queries/sign-up'
 import {
   BuildingAddressDeliveryData,
@@ -9,23 +9,29 @@ import {
   BuildingAddressDeliveryData_buildingAddress,
   BuildingAddressUidInput,
   BuildingAddressUidPart,
-  ClientAddressUidInput,
+  ClientAddressCreateData,
   GetOrCreateBuildingAddress,
   GetOrCreateBuildingAddressVariables,
-  GetOrCreateClientAddress,
-  GetOrCreateClientAddressVariables,
+  CreateClientAddress,
+  CreateClientAddressVariables,
+  ClientAddresses,
+  ClientAddressesVariables,
   ProfileUpdateData,
   SignUp,
   SignUpVariables,
   UpdateProfile,
   UpdateProfileVariables,
-  UserCreateData
+  UserCreateData,
+  UpdateClientAddress,
+  UpdateClientAddressVariables
 } from './graphql/types';
 
 import csv from 'csv-parser';
 import fs from 'fs';
 import path from 'path';
 import { UPDATE_PROFILE } from './graphql/queries/update-profile';
+import { CLIENT_ADDRESSES } from './graphql/queries/client-addresses';
+import { UPDATE_CLIENT_ADDRESS } from './graphql/queries/update-client-address';
 
 const CSV_PATH = path.resolve('./data/client-data.csv');
 const API_URL = 'https://mono-happyfood-api-staging.herokuapp.com/api/graphql'
@@ -33,7 +39,7 @@ const API_URL = 'https://mono-happyfood-api-staging.herokuapp.com/api/graphql'
 const POLLING_TIMEOUT = 60 * 1000;
 const POLLING_INTERVAL = 500;
 
-type ClientAddressInput = Omit<Omit<ClientAddressUidInput, 'buildingAddressIdentifier'>, 'userIdentifier'>
+type ClientAddressInput = Omit<Omit<ClientAddressCreateData, 'buildingAddressIdentifier'>, 'userIdentifier'>
 
 const buildingDefaults: BuildingAddressUidInput = {
   regionType: "Область",
@@ -110,9 +116,23 @@ async function createAddress(buildingAddress: BuildingAddressUidInput, clientAdd
       buildingAddress
     });
     const id = res.getOrCreateBuildingAddressBy.id;
-    await request<GetOrCreateClientAddress, GetOrCreateClientAddressVariables>(API_URL, GET_OR_CREATE_CLIENT_ADDRESS, {
-      data: {...clientAddress, buildingAddressIdentifier: {id}, userIdentifier: {id: userId}}
+    const addresses = await request<ClientAddresses, ClientAddressesVariables>(API_URL, CLIENT_ADDRESSES, {
+      floor: clientAddress.floor,
+      unit: clientAddress.unit,
+      entrance: clientAddress.entrance,
     })
+    if (addresses.clientAddresses.length) {
+      await request<UpdateClientAddress, UpdateClientAddressVariables>(API_URL, UPDATE_CLIENT_ADDRESS, {       
+        id: addresses.clientAddresses[0].id,
+        data: {
+          comment: clientAddress.comment,
+        }
+      })
+    } else {
+      await request<CreateClientAddress, CreateClientAddressVariables>(API_URL, CREATE_CLIENT_ADDRESS, {
+        data: {...clientAddress, buildingAddressIdentifier: {id}, userIdentifier: {id: userId}}
+      })
+    }
   } catch(err) {
     result.error = err.message;
   }
@@ -269,6 +289,7 @@ function parseAddresses(addressesStr: string) {
 
     const buildingAddress = parseBuildingAddress(buildingPart);
     const clientAddress = parseClientAddress(clientPart);
+    clientAddress.comment = comment ? comment.trimEnd() : undefined;
 
     parsed.push({
       buildingAddress,

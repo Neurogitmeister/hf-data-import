@@ -49,6 +49,54 @@ export interface BuildingAddressDeliveryDataVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: ClientAddresses
+// ====================================================
+
+export interface ClientAddresses_clientAddresses {
+  __typename: "ClientAddress";
+  id: string;
+  floor: string | null;
+  entrance: string | null;
+}
+
+export interface ClientAddresses {
+  clientAddresses: ClientAddresses_clientAddresses[];
+}
+
+export interface ClientAddressesVariables {
+  unit?: string | null;
+  floor?: string | null;
+  entrance?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CreateClientAddress
+// ====================================================
+
+export interface CreateClientAddress_createClientAddress {
+  __typename: "ClientAddress";
+  id: string;
+}
+
+export interface CreateClientAddress {
+  createClientAddress: CreateClientAddress_createClientAddress;
+}
+
+export interface CreateClientAddressVariables {
+  data: ClientAddressCreateData;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: GetOrCreateBuildingAddress
 // ====================================================
 
@@ -86,28 +134,6 @@ export interface GetOrCreateBuildingAddress {
 
 export interface GetOrCreateBuildingAddressVariables {
   buildingAddress: BuildingAddressUidInput;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: GetOrCreateClientAddress
-// ====================================================
-
-export interface GetOrCreateClientAddress_getOrCreateClientAddressBy {
-  __typename: "ClientAddress";
-  id: string;
-}
-
-export interface GetOrCreateClientAddress {
-  getOrCreateClientAddressBy: GetOrCreateClientAddress_getOrCreateClientAddressBy;
-}
-
-export interface GetOrCreateClientAddressVariables {
-  data: ClientAddressUidInput;
 }
 
 /* tslint:disable */
@@ -167,6 +193,29 @@ export interface SignUp {
 
 export interface SignUpVariables {
   data: UserCreateData;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UpdateClientAddress
+// ====================================================
+
+export interface UpdateClientAddress_updateClientAddress {
+  __typename: "ClientAddress";
+  id: string;
+}
+
+export interface UpdateClientAddress {
+  updateClientAddress: UpdateClientAddress_updateClientAddress;
+}
+
+export interface UpdateClientAddressVariables {
+  data: ClientAddressUpdateData;
+  id: string;
 }
 
 /* tslint:disable */
@@ -314,12 +363,22 @@ export interface BuildingAddressUidInput {
   streetType: string;
 }
 
-export interface ClientAddressUidInput {
+export interface ClientAddressCreateData {
   buildingAddressIdentifier: BuildingAddressIdentifier;
+  comment?: string | null;
   entrance?: string | null;
   floor?: string | null;
   unit?: string | null;
   userIdentifier: UserIdentifier;
+}
+
+export interface ClientAddressUpdateData {
+  buildingAddressIdentifier?: BuildingAddressIdentifier | null;
+  comment?: string | null;
+  entrance?: string | null;
+  floor?: string | null;
+  unit?: string | null;
+  userIdentifier?: UserIdentifier | null;
 }
 
 export interface ProfileUpdateData {
